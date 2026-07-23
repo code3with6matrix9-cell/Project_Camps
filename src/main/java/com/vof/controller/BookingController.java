@@ -1,0 +1,25 @@
+package com.vof.controller;
+import com.vof.dto.request.CreateBookingRequest;
+import com.vof.dto.response.BookingResponse;
+import com.vof.dto.response.CommonApiResponse;
+import com.vof.service.BookingService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+@RestController @RequestMapping("/api/bookings") @RequiredArgsConstructor @SecurityRequirement(name = "bearerAuth")
+public class BookingController {
+    private final BookingService bookingService;
+    @PostMapping
+    public ResponseEntity<CommonApiResponse> createBooking(@Valid @RequestBody CreateBookingRequest request) {
+        BookingResponse bookingResponse = bookingService.createBooking(request);
+        return new ResponseEntity<>(CommonApiResponse.builder().success(true).message(bookingResponse.getMessage()).data(bookingResponse).build(), HttpStatus.CREATED);
+    }
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<CommonApiResponse> getBookingStatus(@PathVariable String bookingId) {
+        BookingResponse bookingResponse = bookingService.getBookingStatus(bookingId);
+        return ResponseEntity.ok(CommonApiResponse.builder().success(true).message("Booking status retrieved successfully").data(bookingResponse).build());
+    }
+}
