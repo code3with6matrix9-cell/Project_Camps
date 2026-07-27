@@ -1,5 +1,6 @@
 package com.vof.service;
 import com.vof.entity.RefreshToken;
+import com.vof.entity.User;
 import com.vof.exception.TokenRefreshException;
 import com.vof.repository.RefreshTokenRepository;
 import com.vof.repository.UserRepository;
@@ -24,15 +25,22 @@ public class RefreshTokenService {
 
     @Transactional
     public String createRefreshToken(Long userId) {
-        refreshTokenRepository.deleteByUser(userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist.")));
-        String rawToken = generateToken();
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist.")));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist."));
+
+        // Find existing token or create a new one
+        RefreshToken refreshToken = refreshTokenRepository.findByUser(user)
+                .orElse(new RefreshToken());
+
+        // Update the token with new values
+        refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+        String rawToken = generateToken();
         refreshToken.setToken(hash(rawToken));
+
+        // Save the updated or new token
         refreshTokenRepository.save(refreshToken);
+
         return rawToken;
     }
     public RefreshToken verifyExpiration(RefreshToken token) {
@@ -53,8 +61,9 @@ public class RefreshTokenService {
 
     @Transactional
     public int deleteByUserId(Long userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist.")));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist."));
+        return refreshTokenRepository.deleteByUser(user);
     }
 
     private String generateToken() {
