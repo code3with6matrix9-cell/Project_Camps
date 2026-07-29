@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
+import java.math.BigDecimal;
+
 @Service @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentProofRepository paymentProofRepository;
@@ -29,9 +31,18 @@ public class PaymentServiceImpl implements PaymentService {
         requireBookingAccess(booking);
         if (paymentProofRepository.existsByBooking(booking)) throw new IllegalArgumentException("A payment proof has already been submitted for this booking.");
         if (paymentProofRepository.existsByUtr(request.getUtrNumber())) throw new IllegalArgumentException("This UTR number has already been used.");
-        double expectedAmount = booking.getAPackage().getPrice() * booking.getAdults()
-                + (booking.getAPackage().getPrice() * 0.5 * booking.getChildren());
-        if (Math.abs(request.getAmount() - expectedAmount) > 0.009d) {
+        BigDecimal packagePrice = BigDecimal.valueOf(booking.getAPackage().getPrice());
+
+        BigDecimal expectedAmount = packagePrice.multiply(BigDecimal.valueOf(booking.getAdults()))
+                .add(
+                        packagePrice
+                                .multiply(BigDecimal.valueOf(0.5))
+                                .multiply(BigDecimal.valueOf(booking.getChildren()))
+                );
+
+        BigDecimal difference = request.getAmount().subtract(expectedAmount).abs();
+
+        if (difference.compareTo(BigDecimal.valueOf(0.009)) > 0) {
             throw new IllegalArgumentException("Submitted amount does not match the booking total.");
         }
         if (request.getScreenshot() == null || request.getScreenshot().isEmpty()) throw new IllegalArgumentException("Screenshot file is mandatory.");
