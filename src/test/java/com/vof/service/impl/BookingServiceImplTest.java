@@ -101,7 +101,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(pendingBooking));
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        BookingResponse response = bookingService.approveBooking(1L);
+        BookingResponse response = bookingService.approveBooking(String.valueOf(1L));
 
         assertNotNull(response);
         assertEquals(BookingStatus.APPROVED.toString(), response.getStatus());
