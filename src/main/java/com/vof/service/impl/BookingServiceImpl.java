@@ -90,9 +90,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse approveBooking(Long id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+    public BookingResponse approveBooking(String bookingId) {
+        Booking booking = bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with bookingId: " + bookingId));
         booking.setStatus(BookingStatus.APPROVED);
         bookingRepository.save(booking);
         return BookingResponse.builder()
@@ -104,9 +104,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse rejectBooking(Long id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
+    public BookingResponse rejectBooking(String bookingId) {
+        Booking booking = bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with bookingId: " + bookingId));
         booking.setStatus(BookingStatus.REJECTED);
         bookingRepository.save(booking);
         return BookingResponse.builder()

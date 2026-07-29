@@ -16,12 +16,12 @@ public class AdminBookingController {
         List<BookingDetailResponse> bookings = bookingService.getAllBookings();
         return ResponseEntity.ok(CommonApiResponse.builder().success(true).message("All bookings retrieved.").data(bookings).build());
     }
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<CommonApiResponse> approveBooking(@PathVariable Long id) {
-        return ResponseEntity.ok(CommonApiResponse.builder().success(true).data(bookingService.approveBooking(id)).message("Booking approved successfully.").build());
+    @PutMapping("/{bookingId}/approve")
+    public ResponseEntity<CommonApiResponse> approveBooking(@PathVariable String bookingId) {
+        return ResponseEntity.ok(CommonApiResponse.builder().success(true).data(bookingService.approveBooking(bookingId)).message("Booking approved successfully.").build());
     }
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<CommonApiResponse> rejectBooking(@PathVariable Long id) {
-        return ResponseEntity.ok(CommonApiResponse.builder().success(true).data(bookingService.rejectBooking(id)).message("Booking rejected successfully.").build());
+    @PutMapping("/{bookingId}/reject")
+    public ResponseEntity<CommonApiResponse> rejectBooking(@PathVariable String bookingId) {
+        return ResponseEntity.ok(CommonApiResponse.builder().success(true).data(bookingService.rejectBooking(bookingId)).message("Booking rejected successfully.").build());
     }
 }

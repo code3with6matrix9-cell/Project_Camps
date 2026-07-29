@@ -7,6 +7,6 @@ public interface BookingService {
     BookingResponse createBooking(CreateBookingRequest request);
     BookingResponse getBookingStatus(String bookingId);
     List<BookingDetailResponse> getAllBookings();
-    BookingResponse approveBooking(Long id);
-    BookingResponse rejectBooking(Long id);
+    BookingResponse approveBooking(String bookingId);
+    BookingResponse rejectBooking(String bookingId);
 }
