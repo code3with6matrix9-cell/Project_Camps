@@ -1,7 +1,9 @@
 package com.vof.mapper;
 import com.vof.dto.response.BookingDetailResponse;
 import com.vof.dto.response.BookingSummaryResponse;
+import com.vof.dto.response.PaymentDetailResponse;
 import com.vof.entity.Booking;
+import com.vof.entity.PaymentProof;
 import org.springframework.stereotype.Component;
 @Component
 public class BookingMapper {
@@ -65,6 +67,22 @@ public class BookingMapper {
                 .children(booking.getChildren())
                 .totalAmount(booking.getTotalAmount())
                 .createdAt(booking.getCreatedAt())
+                .build();
+    }
+
+    public PaymentDetailResponse toPaymentDetailResponse(PaymentProof paymentProof) {
+
+        if (paymentProof == null) {
+            return null;
+        }
+
+        return PaymentDetailResponse.builder()
+                .bookingId(paymentProof.getBooking().getBookingId())
+                .paymentStatus(paymentProof.getStatus().name())
+                .amount(paymentProof.getAmount())
+                .utrNumber(paymentProof.getUtr())
+                .screenshotUrl(paymentProof.getScreenshotUrl())
+                .uploadedAt(paymentProof.getCreatedAt())
                 .build();
     }
 }

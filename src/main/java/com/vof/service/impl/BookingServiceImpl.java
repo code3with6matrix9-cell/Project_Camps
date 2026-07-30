@@ -1,8 +1,10 @@
 package com.vof.service.impl;
 
 import com.vof.constant.BookingStatus;
+import com.vof.constant.PaymentStatus;
 import com.vof.dto.request.CreateBookingRequest;
 import com.vof.dto.request.UpdateBookingRequest;
+import com.vof.dto.request.UpdatePaymentStatusRequest;
 import com.vof.dto.response.*;
 import com.vof.entity.Booking;
 import com.vof.entity.Package;
@@ -15,6 +17,7 @@ import com.vof.exception.ResourceNotFoundException;
 import com.vof.mapper.BookingMapper;
 import com.vof.repository.BookingRepository;
 import com.vof.repository.PackageRepository;
+import com.vof.repository.PaymentProofRepository;
 import com.vof.repository.UserRepository;
 import com.vof.service.BookingService;
 import com.vof.util.BookingIdGenerator;
@@ -36,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final BookingIdGenerator bookingIdGenerator;
     private final BookingMapper bookingMapper;
+    private final PaymentProofRepository paymentProofRepository;
 
     @Override
     @Transactional
@@ -175,7 +179,7 @@ public class BookingServiceImpl implements BookingService {
         return PaymentDetailResponse.builder()
                 .bookingId(booking.getBookingId())
                 .paymentStatus(paymentProof.getStatus().toString())
-                .amount(paymentProof.getAmount() != null ? paymentProof.getAmount().doubleValue() : 0.0)
+                .amount(paymentProof.getAmount())
                 .utrNumber(paymentProof.getUtr())
                 .screenshotUrl(paymentProof.getScreenshotUrl())
                 .uploadedAt(paymentProof.getCreatedAt())
@@ -249,5 +253,35 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findAllNotDeleted().stream()
                 .map(bookingMapper::toBookingSummaryResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public PaymentDetailResponse updatePaymentStatus(
+            String bookingId,
+            UpdatePaymentStatusRequest request) {
+
+        Booking booking = bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Booking not found with bookingId: " + bookingId));
+
+        PaymentProof paymentProof = booking.getPaymentProof();
+
+        if (paymentProof == null) {
+            throw new ResourceNotFoundException(
+                    "Payment proof not found for booking: " + bookingId);
+        }
+
+        if (request.getPaymentStatus() == PaymentStatus.UNDER_VERIFICATION) {
+            throw new IllegalArgumentException(
+                    "Payment cannot be moved back to UNDER_VERIFICATION.");
+        }
+
+        paymentProof.setStatus(request.getPaymentStatus());
+
+        paymentProofRepository.save(paymentProof);
+
+        return bookingMapper.toPaymentDetailResponse(paymentProof);
     }
 }

@@ -12,7 +12,7 @@ public class PaymentProof {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @OneToOne(fetch = FetchType.LAZY, optional = false) @JoinColumn(name = "booking_id", nullable = false, unique = true) private Booking booking;
     @Column(nullable = false, unique = true, length = 64) private String utr;
-    @Column(nullable = false) private BigDecimal amount;
+    @Column(nullable = false) private double amount;
     @Column(nullable = false, length = 2048) private String screenshotUrl;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 30) private PaymentStatus status;
     @CreationTimestamp

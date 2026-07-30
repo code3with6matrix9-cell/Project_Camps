@@ -13,6 +13,6 @@ public class PaymentProofRequest {
     @NotBlank(message = "UTR number is required") @Size(min = 6, max = 64) private String utrNumber;
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01")
-    private BigDecimal amount;
+    private double amount;
     private MultipartFile screenshot;
 }

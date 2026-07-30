@@ -31,18 +31,14 @@ public class PaymentServiceImpl implements PaymentService {
         requireBookingAccess(booking);
         if (paymentProofRepository.existsByBooking(booking)) throw new IllegalArgumentException("A payment proof has already been submitted for this booking.");
         if (paymentProofRepository.existsByUtr(request.getUtrNumber())) throw new IllegalArgumentException("This UTR number has already been used.");
-        BigDecimal packagePrice = BigDecimal.valueOf(booking.getAPackage().getPrice());
+        double packagePrice = booking.getAPackage().getPrice();
 
-        BigDecimal expectedAmount = packagePrice.multiply(BigDecimal.valueOf(booking.getAdults()))
-                .add(
-                        packagePrice
-                                .multiply(BigDecimal.valueOf(0.5))
-                                .multiply(BigDecimal.valueOf(booking.getChildren()))
-                );
+        double expectedAmount = packagePrice * booking.getAdults()
+                + (packagePrice * 0.5 * booking.getChildren());
 
-        BigDecimal difference = request.getAmount().subtract(expectedAmount).abs();
+        double difference = Math.abs(request.getAmount() - expectedAmount);
 
-        if (difference.compareTo(BigDecimal.valueOf(0.009)) > 0) {
+        if (difference > 0.009) {
             throw new IllegalArgumentException("Submitted amount does not match the booking total.");
         }
         if (request.getScreenshot() == null || request.getScreenshot().isEmpty()) throw new IllegalArgumentException("Screenshot file is mandatory.");

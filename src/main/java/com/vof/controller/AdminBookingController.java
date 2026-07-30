@@ -1,10 +1,12 @@
 package com.vof.controller;
 
+import com.vof.dto.request.UpdatePaymentStatusRequest;
 import com.vof.dto.response.BookingDetailResponse;
 import com.vof.dto.response.CommonApiResponse;
 import com.vof.dto.response.PaymentDetailResponse;
 import com.vof.service.BookingService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,5 +48,22 @@ public class AdminBookingController {
     @GetMapping("/{bookingId}/payment")
     public ResponseEntity<CommonApiResponse> getPaymentDetails(@PathVariable String bookingId) {
         return ResponseEntity.ok(CommonApiResponse.builder().success(true).data(bookingService.getPaymentDetails(bookingId)).message("Payment details retrieved successfully.").build());
+    }
+
+    @PutMapping("/{bookingId}/payment-status")
+    public ResponseEntity<CommonApiResponse> updatePaymentStatus(
+            @PathVariable String bookingId,
+            @Valid @RequestBody UpdatePaymentStatusRequest request) {
+
+        PaymentDetailResponse response =
+                bookingService.updatePaymentStatus(bookingId, request);
+
+        return ResponseEntity.ok(
+                CommonApiResponse.builder()
+                        .success(true)
+                        .message("Payment status updated successfully.")
+                        .data(response)
+                        .build()
+        );
     }
 }
