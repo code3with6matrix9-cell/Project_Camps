@@ -227,6 +227,16 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new org.springframework.security.access.AccessDeniedException("Authenticated user no longer exists."));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.vof.dto.response.MyBookingSummaryResponse> getMyBookings() {
+        User user = currentUser();
+        return bookingRepository.findAllByCreatedByOrderByCreatedAtDesc(user)
+                .stream()
+                .map(bookingMapper::toMyBookingSummaryResponse)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private void requireBookingAccess(Booking booking) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {

@@ -20,4 +20,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.bookingId = ?1 AND b.status <> 'DELETED'")
     Optional<Booking> findByBookingIdAndNotDeleted(String bookingId);
+
+    List<Booking> findAllByCreatedByOrderByCreatedAtDesc(com.vof.entity.User user);
 }

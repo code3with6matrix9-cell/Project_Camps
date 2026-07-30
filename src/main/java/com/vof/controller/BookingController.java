@@ -10,9 +10,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.vof.dto.response.MyBookingSummaryResponse;
+
+import java.util.List;
+
 @RestController @RequestMapping("/api/bookings") @RequiredArgsConstructor @SecurityRequirement(name = "bearerAuth")
 public class BookingController {
     private final BookingService bookingService;
+
+    @GetMapping
+    public ResponseEntity<CommonApiResponse> getMyBookings() {
+        List<MyBookingSummaryResponse> bookings = bookingService.getMyBookings();
+        return ResponseEntity.ok(
+                CommonApiResponse.builder()
+                        .success(true)
+                        .message("User bookings retrieved successfully")
+                        .data(bookings)
+                        .build()
+        );
+    }
+
     @PostMapping
     public ResponseEntity<CommonApiResponse> createBooking(@Valid @RequestBody CreateBookingRequest request) {
         BookingResponse bookingResponse = bookingService.createBooking(request);
