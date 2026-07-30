@@ -51,8 +51,14 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<CommonApiResponse> handleIntegrityViolation(DataIntegrityViolationException ex) {
-        logger.warn("Database constraint violation: {}", ex.getMostSpecificCause().getMessage());
-        return new ResponseEntity<>(CommonApiResponse.builder().success(false).message("The request conflicts with existing data.").build(), HttpStatus.CONFLICT);
+        logger.error("Database Error", ex);
+
+        return new ResponseEntity<>(
+                CommonApiResponse.builder()
+                        .success(false)
+                        .message(ex.getMostSpecificCause().getMessage())
+                        .build(),
+                HttpStatus.CONFLICT);
     }
     @ExceptionHandler({HttpMessageNotReadableException.class, HttpMediaTypeNotSupportedException.class})
     public ResponseEntity<CommonApiResponse> handleMalformedRequest(Exception ex) {

@@ -1,5 +1,6 @@
 package com.vof.mapper;
 import com.vof.dto.response.BookingDetailResponse;
+import com.vof.dto.response.BookingSummaryResponse;
 import com.vof.entity.Booking;
 import org.springframework.stereotype.Component;
 @Component
@@ -27,6 +28,32 @@ public class BookingMapper {
                 : "NOT_PAID";
 
         return com.vof.dto.response.MyBookingSummaryResponse.builder()
+                .bookingId(booking.getBookingId())
+                .packageId(booking.getAPackage() != null ? booking.getAPackage().getId() : null)
+                .packageName(booking.getAPackage() != null ? booking.getAPackage().getTitle() : null)
+                .thumbnailImage(thumbnailUrl)
+                .travelDate(booking.getTravelDate())
+                .bookingStatus(booking.getStatus())
+                .paymentStatus(paymentStatus)
+                .adults(booking.getAdults())
+                .children(booking.getChildren())
+                .totalAmount(booking.getTotalAmount())
+                .createdAt(booking.getCreatedAt())
+                .build();
+    }
+
+    public BookingSummaryResponse toBookingSummaryResponse(Booking booking) {
+        if (booking == null) return null;
+
+        String thumbnailUrl = (booking.getAPackage() != null && !booking.getAPackage().getImages().isEmpty())
+                ? booking.getAPackage().getImages().get(0).getImageUrl()
+                : null;
+
+        String paymentStatus = (booking.getPaymentProof() != null)
+                ? booking.getPaymentProof().getStatus().toString()
+                : "NOT_PAID";
+
+        return BookingSummaryResponse.builder()
                 .bookingId(booking.getBookingId())
                 .packageId(booking.getAPackage() != null ? booking.getAPackage().getId() : null)
                 .packageName(booking.getAPackage() != null ? booking.getAPackage().getTitle() : null)

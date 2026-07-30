@@ -1,9 +1,7 @@
 package com.vof.service;
 import com.vof.dto.request.UpdateBookingRequest;
 import com.vof.dto.request.CreateBookingRequest;
-import com.vof.dto.response.BookingDetailResponse;
-import com.vof.dto.response.BookingResponse;
-import com.vof.dto.response.PaymentDetailResponse;
+import com.vof.dto.response.*;
 
 import java.util.List;
 public interface BookingService {
@@ -17,4 +15,5 @@ public interface BookingService {
     PaymentDetailResponse getPaymentDetails(String bookingId);
 
     List<com.vof.dto.response.MyBookingSummaryResponse> getMyBookings();
+    List<BookingSummaryResponse> getAllBookingSummary();
 }

@@ -3,10 +3,7 @@ package com.vof.service.impl;
 import com.vof.constant.BookingStatus;
 import com.vof.dto.request.CreateBookingRequest;
 import com.vof.dto.request.UpdateBookingRequest;
-import com.vof.dto.response.BookingDetailResponse;
-import com.vof.dto.response.BookingResponse;
-import com.vof.dto.response.PaymentDetailResponse;
-import com.vof.dto.response.TravellerResponse;
+import com.vof.dto.response.*;
 import com.vof.entity.Booking;
 import com.vof.entity.Package;
 import com.vof.entity.PaymentProof;
@@ -88,10 +85,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        return BookingResponse.builder()
-                .bookingId(savedBooking.getBookingId())
-                .message("Booking created successfully. Please complete the payment.")
-                .build();
+        return buildBookingResponse(savedBooking);
     }
 
     @Override
@@ -247,5 +241,13 @@ public class BookingServiceImpl implements BookingService {
         if (!isAdmin && !booking.getCreatedBy().getEmail().equals(authentication.getName())) {
             throw new org.springframework.security.access.AccessDeniedException("Booking does not belong to the current user.");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingSummaryResponse> getAllBookingSummary() {
+        return bookingRepository.findAllNotDeleted().stream()
+                .map(bookingMapper::toBookingSummaryResponse)
+                .collect(Collectors.toList());
     }
 }
