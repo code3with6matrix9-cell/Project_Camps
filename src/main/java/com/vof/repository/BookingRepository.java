@@ -2,7 +2,9 @@ package com.vof.repository;
 import com.vof.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -11,5 +13,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Override
     @EntityGraph(attributePaths = "aPackage")
-    java.util.List<Booking> findAll();
+    List<Booking> findAll();
+
+    @Query("SELECT b FROM Booking b WHERE b.status <> 'DELETED'")
+    List<Booking> findAllNotDeleted();
+
+    @Query("SELECT b FROM Booking b WHERE b.bookingId = ?1 AND b.status <> 'DELETED'")
+    Optional<Booking> findByBookingIdAndNotDeleted(String bookingId);
 }

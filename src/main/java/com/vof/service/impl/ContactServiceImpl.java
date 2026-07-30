@@ -5,7 +5,10 @@ import com.vof.repository.ContactMessageRepository;
 import com.vof.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.vof.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
 @Service @RequiredArgsConstructor
 public class ContactServiceImpl implements ContactService {
     private final ContactMessageRepository contactMessageRepository;
@@ -17,5 +20,18 @@ public class ContactServiceImpl implements ContactService {
         message.setPhone(request.getPhone());
         message.setMessage(request.getMessage());
         contactMessageRepository.save(message);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ContactMessage> getAllContactMessages() {
+        return contactMessageRepository.findAllByOrderByIdDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ContactMessage getContactMessageById(Long id) {
+        return contactMessageRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact message not found with id: " + id));
     }
 }

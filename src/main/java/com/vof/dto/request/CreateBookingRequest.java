@@ -1,7 +1,10 @@
 package com.vof.dto.request;
 import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 public class CreateBookingRequest {
     @NotBlank(message = "Customer name is required") @Size(max = 100) private String customerName;
@@ -12,4 +15,7 @@ public class CreateBookingRequest {
     @NotNull(message = "Number of adults is required") @Min(value = 1, message = "At least one adult is required") private Integer adults;
     @NotNull @Min(value = 0, message = "Children cannot be negative") private Integer children = 0;
     @Size(max = 1000) private String specialRequest;
+    private String pickupPoint;
+    @Valid
+    private List<TravellerRequest> travellers;
 }

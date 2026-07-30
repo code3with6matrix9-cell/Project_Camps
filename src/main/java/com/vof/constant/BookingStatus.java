@@ -1,2 +1,2 @@
 package com.vof.constant;
-public enum BookingStatus { PENDING, APPROVED, REJECTED, CANCELLED }
+public enum BookingStatus { PENDING, APPROVED, REJECTED, CANCELLED, DELETED }

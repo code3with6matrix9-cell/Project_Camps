@@ -1,4 +1,5 @@
 package com.vof.controller;
+import com.vof.dto.request.UpdateBookingRequest;
 import com.vof.dto.request.CreateBookingRequest;
 import com.vof.dto.response.BookingResponse;
 import com.vof.dto.response.CommonApiResponse;
@@ -19,7 +20,13 @@ public class BookingController {
     }
     @GetMapping("/{bookingId}")
     public ResponseEntity<CommonApiResponse> getBookingStatus(@PathVariable String bookingId) {
-        BookingResponse bookingResponse = bookingService.getBookingStatus(bookingId);
+        BookingResponse bookingResponse = bookingService.getBookingDetails(bookingId);
         return ResponseEntity.ok(CommonApiResponse.builder().success(true).message("Booking status retrieved successfully").data(bookingResponse).build());
+    }
+
+    @PutMapping("/{bookingId}")
+    public ResponseEntity<CommonApiResponse> updateBooking(@PathVariable String bookingId, @Valid @RequestBody UpdateBookingRequest request) {
+        BookingResponse bookingResponse = bookingService.updateBooking(bookingId, request);
+        return ResponseEntity.ok(CommonApiResponse.builder().success(true).message("Booking updated successfully.").data(bookingResponse).build());
     }
 }

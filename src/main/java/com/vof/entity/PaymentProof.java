@@ -1,4 +1,6 @@
 package com.vof.entity;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 import com.vof.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,4 +15,6 @@ public class PaymentProof {
     @Column(nullable = false) private BigDecimal amount;
     @Column(nullable = false, length = 2048) private String screenshotUrl;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 30) private PaymentStatus status;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }
