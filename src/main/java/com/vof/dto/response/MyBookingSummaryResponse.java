@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,6 +22,10 @@ public class MyBookingSummaryResponse {
     private LocalDate travelDate;
     private BookingStatus bookingStatus;
     private String paymentStatus;
+    private String utrNumber;
+    private String screenshotUrl;
+    private LocalDateTime uploadedAt;
+    private List<TravellerResponse> travellers;
     private int adults;
     private int children;
     private Double totalAmount;

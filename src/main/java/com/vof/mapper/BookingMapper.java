@@ -2,9 +2,14 @@ package com.vof.mapper;
 import com.vof.dto.response.BookingDetailResponse;
 import com.vof.dto.response.BookingSummaryResponse;
 import com.vof.dto.response.PaymentDetailResponse;
+import com.vof.dto.response.TravellerResponse;
 import com.vof.entity.Booking;
 import com.vof.entity.PaymentProof;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
 @Component
 public class BookingMapper {
     public BookingDetailResponse toBookingDetailResponse(Booking booking) {
@@ -19,15 +24,31 @@ public class BookingMapper {
                 .build();
     }
 
-    public com.vof.dto.response.MyBookingSummaryResponse toMyBookingSummaryResponse(com.vof.entity.Booking booking) {
-        if (booking == null) return null;
+    public com.vof.dto.response.MyBookingSummaryResponse toMyBookingSummaryResponse(Booking booking) {
+
+        if (booking == null) {
+            return null;
+        }
+
         String thumbnailUrl = (booking.getAPackage() != null && !booking.getAPackage().getImages().isEmpty())
                 ? booking.getAPackage().getImages().get(0).getImageUrl()
                 : null;
 
-        String paymentStatus = (booking.getPaymentProof() != null)
-                ? booking.getPaymentProof().getStatus().toString()
+        String paymentStatus = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getStatus().name()
                 : "NOT_PAID";
+
+        String screenshotUrl = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getScreenshotUrl()
+                : null;
+
+        String utrNumber = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getUtr()
+                : null;
+
+        LocalDateTime uploadedAt = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getCreatedAt()
+                : null;
 
         return com.vof.dto.response.MyBookingSummaryResponse.builder()
                 .bookingId(booking.getBookingId())
@@ -37,9 +58,33 @@ public class BookingMapper {
                 .travelDate(booking.getTravelDate())
                 .bookingStatus(booking.getStatus())
                 .paymentStatus(paymentStatus)
+
+                .utrNumber(utrNumber)
+                .screenshotUrl(screenshotUrl)
+                .uploadedAt(uploadedAt)
+
                 .adults(booking.getAdults())
                 .children(booking.getChildren())
                 .totalAmount(booking.getTotalAmount())
+
+                .travellers(
+                        booking.getTravellers()
+                                .stream()
+                                .map(traveller -> TravellerResponse.builder()
+                                        .id(traveller.getId())
+                                        .fullName(traveller.getFullName())
+                                        .age(traveller.getAge())
+                                        .gender(traveller.getGender().name())
+                                        .phoneNumber(traveller.getPhoneNumber())
+                                        .emergencyContact(traveller.getEmergencyContact())
+                                        .idProofType(traveller.getIdProofType())
+                                        .idProofNumber(traveller.getIdProofNumber())
+                                        .medicalCondition(traveller.getMedicalCondition())
+                                        .createdAt(traveller.getCreatedAt())
+                                        .build())
+                                .collect(Collectors.toList())
+                )
+
                 .createdAt(booking.getCreatedAt())
                 .build();
     }
