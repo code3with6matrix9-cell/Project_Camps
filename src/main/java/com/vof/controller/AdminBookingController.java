@@ -23,6 +23,7 @@ public class AdminBookingController {
 
     private final BookingService bookingService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CommonApiResponse> getAllBookings() {
         List<BookingDetailResponse> bookings = bookingService.getAllBookings();

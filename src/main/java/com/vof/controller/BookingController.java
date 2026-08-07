@@ -14,7 +14,10 @@ import com.vof.dto.response.MyBookingSummaryResponse;
 
 import java.util.List;
 
-@RestController @RequestMapping("/api/bookings") @RequiredArgsConstructor @SecurityRequirement(name = "bearerAuth")
+@RestController
+@RequestMapping("/api/bookings")
+@RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class BookingController {
     private final BookingService bookingService;
 
@@ -33,7 +36,11 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<CommonApiResponse> createBooking(@Valid @RequestBody CreateBookingRequest request) {
         BookingResponse bookingResponse = bookingService.createBooking(request);
-        return new ResponseEntity<>(CommonApiResponse.builder().success(true).message(bookingResponse.getMessage()).data(bookingResponse).build(), HttpStatus.CREATED);
+        return new ResponseEntity<>(CommonApiResponse.builder()
+                .success(true)
+                .message(bookingResponse.getMessage())
+                .data(bookingResponse)
+                .build(), HttpStatus.CREATED);
     }
     @GetMapping("/{bookingId}")
     public ResponseEntity<CommonApiResponse> getBookingStatus(@PathVariable String bookingId) {

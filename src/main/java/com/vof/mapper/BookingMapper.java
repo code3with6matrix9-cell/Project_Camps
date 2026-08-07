@@ -13,14 +13,90 @@ import java.util.stream.Collectors;
 @Component
 public class BookingMapper {
     public BookingDetailResponse toBookingDetailResponse(Booking booking) {
-        if (booking == null) return null;
+
+        if (booking == null) {
+            return null;
+        }
+
+        String paymentStatus = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getStatus().name()
+                : "NOT_PAID";
+
+        String utrNumber = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getUtr()
+                : null;
+
+        String paymentProofUrl = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getScreenshotUrl()
+                : null;
+
+        LocalDateTime paymentUploadedAt = booking.getPaymentProof() != null
+                ? booking.getPaymentProof().getCreatedAt()
+                : null;
+
         return BookingDetailResponse.builder()
-                .id(booking.getId()).bookingId(booking.getBookingId())
-                .customerName(booking.getCustomerName()).email(booking.getEmail()).phone(booking.getPhone())
-                .adults(booking.getAdults()).children(booking.getChildren())
-                .travelDate(booking.getTravelDate()).specialRequest(booking.getSpecialRequest())
-                .status(booking.getStatus().toString()).createdAt(booking.getCreatedAt())
-                .packageName(booking.getAPackage() != null ? booking.getAPackage().getTitle() : null)
+
+                // Booking
+                .id(booking.getId())
+                .bookingId(booking.getBookingId())
+                .packageId(
+                        booking.getAPackage() != null
+                                ? booking.getAPackage().getId()
+                                : null
+                )
+                .packageName(
+                        booking.getAPackage() != null
+                                ? booking.getAPackage().getTitle()
+                                : null
+                )
+                .adults(booking.getAdults())
+                .children(booking.getChildren())
+                .travelDate(booking.getTravelDate())
+                .specialRequest(booking.getSpecialRequest())
+                .pickupPoint(booking.getPickupPoint())
+                .status(
+                        booking.getStatus() != null
+                                ? booking.getStatus().name()
+                                : null
+                )
+                .totalAmount(booking.getTotalAmount())
+                .createdAt(booking.getCreatedAt())
+
+                // Customer
+                .customerName(booking.getCustomerName())
+                .email(booking.getEmail())
+                .phone(booking.getPhone())
+
+                // Payment
+                .paymentStatus(paymentStatus)
+                .utrNumber(utrNumber)
+                .paymentProofUrl(paymentProofUrl)
+                .paymentUploadedAt(paymentUploadedAt)
+
+                // Travellers
+                .travellers(
+                        booking.getTravellers()
+                                .stream()
+                                .map(traveller -> TravellerResponse.builder()
+                                        .id(traveller.getId())
+                                        .fullName(traveller.getFullName())
+                                        .age(traveller.getAge())
+                                        .gender(
+                                                traveller.getGender() != null
+                                                        ? traveller.getGender().name()
+                                                        : null
+                                        )
+                                        .phoneNumber(traveller.getPhoneNumber())
+                                        .emergencyContact(traveller.getEmergencyContact())
+                                        .idProofType(traveller.getIdProofType())
+                                        .idProofNumber(traveller.getIdProofNumber())
+                                        .medicalCondition(traveller.getMedicalCondition())
+                                        .createdAt(traveller.getCreatedAt())
+                                        .build()
+                                )
+                                .collect(Collectors.toList())
+                )
+
                 .build();
     }
 
